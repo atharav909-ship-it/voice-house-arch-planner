@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sarvam AI - Voice-Driven Architectural House Layout Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            architect: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b',
+            },
+            blueprint: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#0f172a'
+            }
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace', 'Consolas'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20">
+          <i data-lucide="compass" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-lg font-bold tracking-tight text-white">Sarvam ArchPlan</h1>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">Saaras v4 + 105B</span>
+          </div>
+          <p class="text-xs text-slate-400">Voice-Driven Bioclimatic Architectural House Layout Planner</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div id="apiKeyBadge" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Sarvam API Active</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+    <!-- Top Grid: Voice Input & Transcript Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Voice Input Panel (5 cols) -->
+      <section class="lg:col-span-5 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur flex flex-col justify-between shadow-xl relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="mic" class="w-5 h-5 text-cyan-400"></i>
+              <h2 class="font-semibold text-slate-200">Voice Briefing</h2>
+            </div>
+            <span id="recordingStateBadge" class="text-xs px-2.5 py-1 rounded-md font-mono bg-slate-800 text-slate-400 border border-slate-700">
+              Idle
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-400 leading-relaxed mb-6">
+            Speak your plot specs, city, orientation, budget, and desired rooms or furniture in <strong class="text-slate-200">English, Hindi, Marathi</strong>, or any Indian regional language.
+          </p>
+
+          <!-- Big Record Button & Wave Visualization -->
+          <div class="flex flex-col items-center justify-center py-6">
+            <div class="relative flex items-center justify-center">
+              <div id="recordRing" class="absolute inset-0 rounded-full bg-cyan-500/20 scale-100 transition-all duration-300 pointer-events-none"></div>
+              <button id="recordBtn" class="relative z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white flex flex-col items-center justify-center shadow-xl shadow-cyan-600/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-cyan-500/40 active:scale-95">
+                <i id="recordIcon" data-lucide="mic" class="w-9 h-9"></i>
+                <span id="recordTimer" class="text-[11px] font-mono mt-1 text-cyan-100">Click to Talk</span>
+              </button>
+            </div>
+
+            <p id="recordStatusText" class="mt-4 text-xs font-medium text-slate-400 text-center">
+              Click to start recording your architectural requirements
+            </p>
+          </div>
+
+          <!-- File Upload Fallback -->
+          <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+            <label class="text-xs text-slate-400 flex items-center space-x-2 cursor-pointer hover:text-cyan-400 transition">
+              <i data-lucide="upload" class="w-4 h-4"></i>
+              <span>Or upload audio file (WAV/MP3/WEBM)</span>
+              <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+            </label>
+            <span id="uploadFileName" class="text-[11px] text-slate-500 truncate max-w-[140px]"></span>
+          </div>
+        </div>
+
+        <!-- Sample Voice Presets -->
+        <div class="mt-6 pt-4 border-t border-slate-800/80">
+          <p class="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-2">Preset Voice Scenarios</p>
+          <div class="flex flex-wrap gap-2">
+            <button class="preset-chip text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg border border-slate-700/60 transition flex items-center space-x-1" data-preset="pune">
+              <span>🏡 Pune 30x40 North (G+1)</span>
+            </button>
+            <button class="preset-chip text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg border border-slate-700/60 transition flex items-center space-x-1" data-preset="ahmedabad">
+              <span>🏜️ Ahmedabad 40x60 West (Luxury)</span>
+            </button>
+            <button class="preset-chip text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg border border-slate-700/60 transition flex items-center space-x-1" data-preset="bengaluru">
+              <span>🌿 Bengaluru 30x50 East (Duplex)</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transcript & Parameter Extraction Panel (7 cols) -->
+      <section class="lg:col-span-7 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur flex flex-col justify-between shadow-xl">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="file-text" class="w-5 h-5 text-blue-400"></i>
+              <h2 class="font-semibold text-slate-200">Speech Transcript (Sarvam Saaras v4)</h2>
+            </div>
+            <button id="clearTranscriptBtn" class="text-xs text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <p class="text-xs text-slate-400 mb-3">
+            Live editable transcript translated to English by Sarvam STT. Tweak any dimensions or furniture details:
+          </p>
+
+          <textarea id="transcriptTextarea" rows="4" class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl p-3.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 font-sans transition resize-none" placeholder="Transcript will appear here automatically when you speak or load a preset... (e.g. 'I have a 30x40 north-facing plot in Pune, middle-class budget, want G+1 duplex with L-shaped couch, TV console, ottoman, floor vase, and 6-seater dining table')"></textarea>
+
+          <!-- Detected Parameter Badges -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Detected Parameters</span>
+              <span id="paramCountBadge" class="text-[11px] text-cyan-400 font-mono">0 tags identified</span>
+            </div>
+            <div id="parameterTagsContainer" class="flex flex-wrap gap-2 min-h-[38px] p-2 rounded-xl bg-slate-950/40 border border-slate-800/60">
+              <span class="text-xs text-slate-400 italic self-center px-1">Parameters will be dynamically extracted from the voice brief.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <div class="text-xs text-slate-400 flex items-center space-x-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            <span>Powered by <strong class="text-slate-300">sarvam-105b-conversations</strong></span>
+          </div>
+
+          <button id="generateBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span>Generate Architectural Layout</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Loading State Skeleton -->
+    <div id="loadingIndicator" class="hidden bg-slate-900/80 border border-cyan-800/50 rounded-2xl p-10 text-center shadow-2xl relative overflow-hidden">
+      <div class="max-w-md mx-auto space-y-4">
+        <div class="inline-block p-4 rounded-full bg-cyan-950 border border-cyan-700/60 text-cyan-400 animate-spin">
+          <i data-lucide="loader" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white">Generating Architectural Layout</h3>
+        <p class="text-xs text-slate-400">
+          Calculating solar angles, microclimate cross-ventilation, NBC 3-foot clearance corridors, and floor zoning tables via Sarvam AI...
+        </p>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-2/3 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="layoutResultsSection" class="hidden space-y-8 animate-fade-in">
+
+      <!-- Layout Header Card -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-blue-950/40 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono font-medium">Bioclimatic Layout Plan</span>
+            <span id="resultBudgetBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800 font-mono">Middle-Class</span>
+          </div>
+          <h2 id="resultProjectTitle" class="text-2xl font-extrabold text-white tracking-tight">Pune North-Facing G+1 Duplex</h2>
+          <p id="resultSubtitle" class="text-xs text-slate-400 mt-1">
+            Optimized for Semi-Arid Microclimate • Vastu & NBC Compliant • 3-Ft Clearance Standard
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="copyJsonBtn" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center space-x-1.5 transition">
+            <i data-lucide="code" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Copy JSON</span>
+          </button>
+          <button id="printBtn" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center space-x-1.5 transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Print Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bioclimatic Passive Strategy Cards (4 cols) -->
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <i data-lucide="sun" class="w-5 h-5 text-amber-400"></i>
+          <h3 class="text-lg font-bold text-slate-100">Climate-Responsive Passive Strategies</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Sun Path Strategy -->
+          <div class="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 hover:border-amber-500/40 transition">
+            <div class="flex items-center space-x-2.5 text-amber-400 mb-3">
+              <i data-lucide="sun-medium" class="w-5 h-5"></i>
+              <h4 class="font-semibold text-sm text-slate-200">Solar Orientation</h4>
+            </div>
+            <p id="stratSunPath" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+
+          <!-- Wind & Ventilation -->
+          <div class="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 hover:border-cyan-500/40 transition">
+            <div class="flex items-center space-x-2.5 text-cyan-400 mb-3">
+              <i data-lucide="wind" class="w-5 h-5"></i>
+              <h4 class="font-semibold text-sm text-slate-200">Wind & Stack Effect</h4>
+            </div>
+            <p id="stratWind" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+
+          <!-- Fenestration / Windows -->
+          <div class="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 hover:border-blue-500/40 transition">
+            <div class="flex items-center space-x-2.5 text-blue-400 mb-3">
+              <i data-lucide="maximize" class="w-5 h-5"></i>
+              <h4 class="font-semibold text-sm text-slate-200">Window Sizing & Sills</h4>
+            </div>
+            <p id="stratWindows" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+
+          <!-- Shading & Materials -->
+          <div class="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 hover:border-emerald-500/40 transition">
+            <div class="flex items-center space-x-2.5 text-emerald-400 mb-3">
+              <i data-lucide="shield" class="w-5 h-5"></i>
+              <h4 class="font-semibold text-sm text-slate-200">Thermal Mass & Shading</h4>
+            </div>
+            <p id="stratShading" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floor-by-Floor Master Schedule Table -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="table" class="w-5 h-5 text-cyan-400"></i>
+            <h3 class="text-lg font-bold text-slate-100">Floor-by-Floor Master Zoning Schedule</h3>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">NBC Standard Sizing</span>
+        </div>
+
+        <div id="floorsScheduleContainer" class="space-y-6">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Room-by-Room Furniture & Fixture Layout with 3ft Clearances -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="armchair" class="w-5 h-5 text-indigo-400"></i>
+            <h3 class="text-lg font-bold text-slate-100">Furniture & Fixture Layout (3-Foot Clearance Corridors)</h3>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800 font-mono">Exact Wall Anchoring</span>
+        </div>
+
+        <div id="furnitureLayoutContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 2D Floor Plan Visualizer (Schematic & ASCII Plan) -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="layout" class="w-5 h-5 text-cyan-400"></i>
+            <h3 class="text-lg font-bold text-slate-100">2D Floor Plan Blueprint & Diagram</h3>
+          </div>
+          <div class="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button id="viewInteractiveBtn" class="px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">
+              Vector Blueprint
+            </button>
+            <button id="viewAsciiBtn" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+              ASCII Schematic
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Blueprint Container -->
+        <div id="blueprintContainer" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl relative">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+            <div class="text-xs text-slate-400 flex items-center space-x-2">
+              <span class="w-3 h-3 bg-blue-500 rounded-sm"></span><span>Living Area</span>
+              <span class="w-3 h-3 bg-emerald-500 rounded-sm ml-2"></span><span>Dining</span>
+              <span class="w-3 h-3 bg-amber-500 rounded-sm ml-2"></span><span>Kitchen (SE)</span>
+              <span class="w-3 h-3 bg-purple-500 rounded-sm ml-2"></span><span>Bedrooms</span>
+            </div>
+            <span class="text-xs font-mono text-cyan-400">Scale: 1 grid unit = 1 foot</span>
+          </div>
+
+          <div id="schematicCanvasContainer" class="w-full flex items-center justify-center overflow-x-auto py-4">
+            <!-- SVG / Vector Rendered here -->
+          </div>
+        </div>
+
+        <!-- ASCII Diagram Container (Hidden by default or toggled) -->
+        <div id="asciiContainer" class="hidden bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+            <span class="text-xs font-mono text-slate-400">2D Monospace ASCII Plan Output</span>
+            <button id="copyAsciiBtn" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy ASCII</span>
+            </button>
+          </div>
+          <pre id="asciiOutput" class="font-mono text-xs sm:text-sm text-cyan-300 leading-tight overflow-x-auto p-4 bg-slate-900/80 rounded-xl border border-slate-800/80"></pre>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 mt-16 py-6 text-center text-xs text-slate-500">
+    Voice-Driven Architectural House Layout Planner • Built with FastAPI, Tailwind, and Sarvam AI APIs (Saaras v4 & Sarvam 105B)
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
