@@ -1,89 +1,240 @@
-/* Custom Architectural Planner Styling */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* ==========================================================================
+   NESTORA LUXURY ARCHITECTURAL STUDIO - CAD/BIM DESIGN SYSTEM
+   Theme: Deep Obsidian & Warm Champagne Gold
+   ========================================================================== */
 
-html {
-  scroll-behavior: smooth;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-deep: #090a0d;
+  --bg-surface: #11141a;
+  --bg-elevated: #161b24;
+  --bg-highlight: #1d232f;
+  
+  --border-subtle: #202632;
+  --border-medium: #2d3646;
+  --border-gold: rgba(216, 177, 138, 0.28);
+  
+  --gold-primary: #d8b18a;
+  --gold-light: #f3dfc8;
+  --gold-hover: #e8c49e;
+  --gold-dim: #99754f;
+  --gold-glow: rgba(216, 177, 138, 0.15);
+  
+  --cad-cyan: #38bdf8;
+  --cad-emerald: #34d399;
+  --cad-amber: #fbbf24;
+  --cad-rose: #f43f5e;
+  
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-cad: 'JetBrains Mono', monospace;
 }
 
-/* Custom Scrollbar */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Custom Studio Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: var(--bg-deep);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: var(--border-medium);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--gold-dim);
 }
 
-/* Recording Pulse Animation */
-@keyframes recordPulse {
+/* Monospace CAD Elements */
+.font-cad {
+  font-family: var(--font-cad);
+}
+
+/* Luxury CAD Grid Background */
+.cad-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(216, 177, 138, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(216, 177, 138, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.cad-grid-major {
+  background-image: 
+    linear-gradient(to right, rgba(216, 177, 138, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(216, 177, 138, 0.08) 1px, transparent 1px);
+  background-size: 120px 120px;
+}
+
+/* Concentric Voice Ripple Animations */
+@keyframes goldRipple {
   0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+    transform: scale(0.9);
+    opacity: 0.8;
   }
-  70% {
-    transform: scale(1.15);
-    box-shadow: 0 0 0 25px rgba(6, 182, 212, 0);
+  50% {
+    opacity: 0.4;
   }
   100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
-  }
-}
-
-.recording-pulse {
-  animation: recordPulse 1.8s infinite;
-}
-
-/* Fade in */
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
+    transform: scale(1.6);
     opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
-/* Blueprint grid background */
-.blueprint-grid {
-  background-image: 
-    linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
+.voice-ripple {
+  animation: goldRipple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
-/* Print styling */
+.voice-ripple-delay {
+  animation: goldRipple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  animation-delay: 0.75s;
+}
+
+/* Studio Glass Card */
+.studio-card {
+  background: linear-gradient(180deg, rgba(22, 27, 36, 0.88) 0%, rgba(17, 20, 26, 0.92) 100%);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  transition: all 0.2s ease-in-out;
+}
+
+.studio-card-gold {
+  background: linear-gradient(180deg, rgba(28, 33, 44, 0.92) 0%, rgba(18, 22, 30, 0.96) 100%);
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 4px 20px -2px var(--gold-glow);
+}
+
+/* Active Gold Border Glow */
+.gold-glow {
+  box-shadow: 0 0 15px -2px rgba(216, 177, 138, 0.35);
+}
+
+/* SVG CAD Interaction Styling */
+.cad-room-node {
+  cursor: pointer;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.cad-room-node:hover rect.room-bg {
+  fill-opacity: 0.35 !important;
+  stroke: var(--gold-primary) !important;
+  stroke-width: 1.5 !important;
+}
+
+.cad-furniture-node {
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.cad-furniture-node:hover rect {
+  filter: drop-shadow(0 0 8px rgba(216, 177, 138, 0.6));
+  stroke: var(--gold-light) !important;
+  stroke-width: 2 !important;
+}
+
+.cad-furniture-selected rect {
+  stroke: var(--gold-primary) !important;
+  stroke-width: 2.5 !important;
+  filter: drop-shadow(0 0 12px rgba(216, 177, 138, 0.75)) !important;
+}
+
+/* Luxury Buttons */
+.btn-gold {
+  background: linear-gradient(135deg, #d8b18a 0%, #b8916b 100%);
+  color: #0c0d10;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 14px rgba(216, 177, 138, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #e8c49e 0%, #c99f78 100%);
+  box-shadow: 0 6px 20px rgba(216, 177, 138, 0.38);
+  transform: translateY(-1px);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-studio {
+  background: rgba(22, 27, 36, 0.8);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.btn-studio:hover {
+  background: rgba(30, 36, 48, 0.95);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+}
+
+.btn-studio-active {
+  background: rgba(216, 177, 138, 0.15);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+}
+
+/* Asset Shelf Pill */
+.asset-pill {
+  transition: all 0.2s ease;
+}
+
+.asset-pill:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-2px);
+  background: rgba(28, 34, 46, 0.9);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Print Blueprint Sheet Styling */
 @media print {
   body {
     background: white !important;
     color: black !important;
+    overflow: visible !important;
   }
-  header, footer, #recordBtn, .preset-chip, #copyJsonBtn, #printBtn, #viewAsciiBtn, #viewInteractiveBtn {
+  header, #leftSidebar, #rightSidebar, #bottomDock, #canvasControls {
     display: none !important;
   }
-  .bg-slate-900\/70, .bg-slate-900, .bg-slate-950 {
+  #centerWorkspace {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
     background: white !important;
-    border: 1px solid #ccc !important;
-    color: black !important;
   }
-  #asciiOutput {
-    color: black !important;
-    background: #f8fafc !important;
+  svg {
+    background: white !important;
+    filter: invert(1) hue-rotate(180deg);
   }
 }
