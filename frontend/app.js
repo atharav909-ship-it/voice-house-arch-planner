@@ -1,5 +1,5 @@
 // ==========================================================================
-// NESTORA LUXURY ARCHITECTURAL STUDIO - FRONTEND ENGINE
+// STHAPATI LUXURY ARCHITECTURAL STUDIO - FRONTEND ENGINE
 // Theme: Deep Obsidian & Warm Champagne Gold (CAD/BIM Cockpit)
 // ==========================================================================
 
@@ -994,7 +994,7 @@ function exportSvgFile() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `Nestora_ArchPlan_${Date.now()}.svg`;
+  link.download = `Sthapati_ArchPlan_${Date.now()}.svg`;
   link.click();
   URL.revokeObjectURL(url);
 }
